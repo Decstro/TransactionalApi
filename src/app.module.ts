@@ -3,8 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 
-// Import your feature modules here
-// import { TransactionsModule } from './modules/transactions/transactions.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
 
 @Module({
   imports: [
@@ -25,8 +24,8 @@ import { join } from 'path';
       }),
     }),
 
-    // Your feature modules go here
-    // TransactionsModule,
+    // Modules,
+    TransactionsModule,
   ],
 })
 export class AppModule {}
