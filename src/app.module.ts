@@ -1,29 +1,23 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { join } from 'path';
-
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TransactionsModule } from './modules/transactions/transactions.module';
+import databaseConfig from './config/database.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+      load: [databaseConfig],
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: () => ({
-        type: 'postgres',
-        host: process.env.DB_HOST,
-        port: Number(process.env.DB_PORT),
-        username: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        entities: [
-          join(__dirname, '**', '*.entity.{ts,js}'),
-          join(__dirname, '**', '*.orm-entity.{ts,js}'),
-        ],
-        synchronize: process.env.NODE_ENV !== 'production',
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        ...configService.get('database'),
+        entities: [__dirname + '/**/*.orm-entity.{js,ts}'],
       }),
     }),
     TransactionsModule,
