@@ -19,12 +19,13 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
         username: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-        entities: [join(__dirname, '**', '*.entity.{ts,js}')],
-        synchronize: true, // 🔥 For dev only — turn off in production!
+        entities: [
+          join(__dirname, '**', '*.entity.{ts,js}'),
+          join(__dirname, '**', '*.orm-entity.{ts,js}'),
+        ],
+        synchronize: process.env.NODE_ENV !== 'production',
       }),
     }),
-
-    // Modules,
     TransactionsModule,
   ],
 })
