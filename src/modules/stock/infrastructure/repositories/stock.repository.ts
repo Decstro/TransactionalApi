@@ -15,7 +15,13 @@ export class StockRepository implements StockRepositoryPort {
   async findById(productId: string): Promise<Stock | null> {
     const entity = await this.repo.findOne({ where: { id: productId } });
     if (!entity) return null;
-    return new Stock();
+    return new Stock(
+      entity.id,
+      entity.name,
+      entity.price,
+      entity.quantity,
+      entity.description,
+    );
   }
 
   async decrementStock(productId: string, quantity: number): Promise<void> {
