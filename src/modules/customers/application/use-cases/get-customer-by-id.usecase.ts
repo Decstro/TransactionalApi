@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CustomerRepositoryPort } from '../../ports/out/customer-repository.port';
 import { Customer } from '../../domain/entities/customer.entity';
 
@@ -13,7 +13,7 @@ export class GetCustomerByIdUseCase {
     const customer = await this.customerRepo.findById(customerId);
 
     if (!customer) {
-      throw new Error('Customer not found');
+      throw new NotFoundException(`Customer not found`);
     }
 
     return customer;

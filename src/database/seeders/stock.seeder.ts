@@ -20,12 +20,14 @@ export class StockSeeder {
 
     const dummyProducts = [
       {
+        id: 'PROD-001',
         name: 'Xbox Series X',
         quantity: 100,
         description: 'Experience next-gen 4K gaming at 120 FPS',
         price: 499.99,
       },
       {
+        id: 'PROD-002',
         name: 'Xbox Series S',
         quantity: 40,
         price: 299.99,
@@ -35,5 +37,6 @@ export class StockSeeder {
 
     await this.stockRepo.save(dummyProducts);
     console.log(`✅ Seeded ${dummyProducts.length} products successfully!`);
+    console.log(`🔑 Postman productId to use: PROD-001`);
   }
 }

@@ -1,10 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { DatabaseSeeder } from './database/seeders/database.seeder';
 import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Run database seeds if RUN_SEEDS is true
+  if (process.env.RUN_SEEDS === 'true') {
+    console.log('🌱 Running database seeds...');
+    const seeder = app.get(DatabaseSeeder);
+    await seeder.run();
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   app.use(helmet());

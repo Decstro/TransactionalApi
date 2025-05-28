@@ -35,6 +35,6 @@ export class CustomerSeeder {
 
     await this.customerRepo.save(dummyCustomers);
     console.log(`✅ Seeded ${dummyCustomers.length} customers successfully!`);
-    console.log(`🔑 Frontend customer ID to use: CUST-001`);
+    console.log(`🔑 Postman customer ID to use: CUST-001`);
   }
 }

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DeliveryRepositoryPort } from '../../ports/out/delivery-repository.port';
 import { Delivery } from '../../domain/entities/delivery.entity';
 
@@ -13,7 +13,7 @@ export class GetDeliveryByIdUseCase {
     const delivery = await this.deliveryRepo.findById(id);
 
     if (!delivery) {
-      throw new Error('Delivery not found');
+      throw new NotFoundException('Delivery not found');
     }
 
     return delivery;
