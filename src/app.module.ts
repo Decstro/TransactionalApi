@@ -3,11 +3,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import databaseConfig from './config/database.config';
-import { StockModule } from './modules/stock/stock.module';
+import { StockModule } from './modules/stock/stocks.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { StockSeeder } from './database/seeders/stock.seeder';
 import { DatabaseSeeder } from './database/seeders/database.seeder';
 import { StockOrmEntity } from './modules/stock/infrastructure/entities/stock.orm-entity';
+import { CustomersModule } from './modules/customers/customers.module';
+import { DeliveriesModule } from './modules/deliveries/deliveries.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { StockOrmEntity } from './modules/stock/infrastructure/entities/stock.or
     // Modules
     TransactionsModule,
     StockModule,
+    CustomersModule,
+    DeliveriesModule,
   ],
   providers: [StockSeeder, DatabaseSeeder],
 })
