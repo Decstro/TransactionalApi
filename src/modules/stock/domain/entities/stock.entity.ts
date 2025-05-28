@@ -1,25 +1,9 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
-
-@Entity()
 export class Stock {
-  @PrimaryColumn()
-  id: string;
-
-  @Column()
-  name: string;
-
-  @Column('decimal', { precision: 10, scale: 2 })
-  price: number;
-
-  @Column('int')
-  quantity: number;
-
-  @Column('text')
-  description: string;
-
-  @Column('simple-array')
-  images: string[];
-
-  @Column('numeric')
-  rating: number;
+  constructor(
+    public readonly id: string,
+    public readonly name: string,
+    public readonly price: number,
+    public readonly quantity: number,
+    public readonly description: string,
+  ) {}
 }
