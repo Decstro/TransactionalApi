@@ -11,6 +11,7 @@ import { StockOrmEntity } from './modules/stock/infrastructure/entities/stock.or
 import { CustomersModule } from './modules/customers/customers.module';
 import { DeliveriesModule } from './modules/deliveries/deliveries.module';
 import { CustomerSeeder } from './database/seeders/customer.seeder';
+import { CustomerOrmEntity } from './modules/customers/infrastructure/entities/customer.orm-entity';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { CustomerSeeder } from './database/seeders/customer.seeder';
         entities: [__dirname + '/**/*.orm-entity.{js,ts}'],
       }),
     }),
-    TypeOrmModule.forFeature([StockOrmEntity]),
+    TypeOrmModule.forFeature([StockOrmEntity, CustomerOrmEntity]),
 
     // Modules
     TransactionsModule,

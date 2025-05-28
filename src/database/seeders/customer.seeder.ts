@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { CustomerOrmEntity } from '../../modules/customers/infrastructure/entities/customer.orm-entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CustomerSeeder {

@@ -8,6 +8,7 @@ import {
   TransactionStatus,
 } from '../../domain/entities/transaction.entity';
 import { Delivery } from '../../../deliveries/domain/entities/delivery.entity';
+import { PaymentService } from '../../services/payment.service';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface ProcessPurchaseRequest {
@@ -16,6 +17,13 @@ export interface ProcessPurchaseRequest {
   quantity: number;
   shippingAddress: string;
   amount: number;
+  cardData: {
+    cardNumber: string;
+    expMonth: string;
+    expYear: string;
+    cvc: string;
+    holderName: string;
+  };
 }
 
 export interface ProcessPurchaseResponse {
@@ -71,9 +79,10 @@ export class ProcessPurchaseTransactionUseCase {
 
     try {
       // 4. Call external payment API (mocked)
-      const paymentResult = await this.mockExternalPaymentAPI(
+      const paymentResult = await this.processWompiPayment(
         transactionId,
         request.amount,
+        request.cardData,
       );
 
       if (paymentResult.success) {
@@ -137,29 +146,31 @@ export class ProcessPurchaseTransactionUseCase {
     }
   }
 
-  private async mockExternalPaymentAPI(
+  private async processWompiPayment(
     transactionId: string,
     amount: number,
+    cardData: {
+      cardNumber: string;
+      expMonth: string;
+      expYear: string;
+      cvc: string;
+      holderName: string;
+    },
   ): Promise<{ success: boolean; error?: string }> {
-    // Mock external API call with random success/failure
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // 80% success rate for demo purposes
-        const isSuccess = Math.random() > 0.2;
+    const paymentService = new PaymentService();
+    const result = await paymentService.processWompiPayment(
+      transactionId,
+      amount,
+      'CARD',
+      {
+        cardNumber: cardData.cardNumber,
+        expMonth: cardData.expMonth,
+        expYear: cardData.expYear,
+        cvc: cardData.cvc,
+        holderName: cardData.holderName,
+      },
+    );
 
-        if (isSuccess) {
-          console.log(
-            `✅ Payment successful for transaction ${transactionId}, amount: $${amount}`,
-          );
-          resolve({ success: true });
-        } else {
-          console.log(`❌ Payment failed for transaction ${transactionId}`);
-          resolve({
-            success: false,
-            error: 'Payment gateway declined the transaction',
-          });
-        }
-      }, 1000); // Simulate 1 second API call delay
-    });
+    return result;
   }
 }
