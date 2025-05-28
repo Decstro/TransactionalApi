@@ -8,7 +8,9 @@ async function bootstrap() {
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   app.use(helmet());
-  app.enableCors();
+  app.enableCors({
+    origin: process.env.FRONTEND_URL,
+  });
 
   // Swagger documentation
   const config = new DocumentBuilder()
