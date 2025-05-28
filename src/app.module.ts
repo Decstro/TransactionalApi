@@ -1,8 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TransactionsModule } from './modules/transactions/transactions.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
 import databaseConfig from './config/database.config';
+import { StockModule } from './modules/stock/stock.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
+import { StockSeeder } from './database/seeders/stock.seeder';
+import { DatabaseSeeder } from './database/seeders/database.seeder';
+import { StockOrmEntity } from './modules/stock/infrastructure/entities/stock.orm-entity';
 
 @Module({
   imports: [
@@ -20,7 +25,11 @@ import databaseConfig from './config/database.config';
         entities: [__dirname + '/**/*.orm-entity.{js,ts}'],
       }),
     }),
+    TypeOrmModule.forFeature([StockOrmEntity]),
+    // Modules
     TransactionsModule,
+    StockModule,
   ],
+  providers: [StockSeeder, DatabaseSeeder],
 })
 export class AppModule {}

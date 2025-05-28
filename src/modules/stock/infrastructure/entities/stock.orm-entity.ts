@@ -16,10 +16,4 @@ export class StockOrmEntity {
 
   @Column('text')
   description: string;
-
-  @Column('simple-array')
-  images: string[];
-
-  @Column('numeric')
-  rating: number;
 }
