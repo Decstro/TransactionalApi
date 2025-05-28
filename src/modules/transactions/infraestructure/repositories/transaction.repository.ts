@@ -34,4 +34,36 @@ export class TransactionRepository implements TransactionRepositoryPort {
       entity.createdAt,
     );
   }
+
+  async findByCustomerId(customerId: string): Promise<Transaction[]> {
+    const entities = await this.repo.find({ where: { customerId } });
+    return entities.map(
+      (entity) =>
+        new Transaction(
+          entity.id,
+          entity.customerId,
+          entity.status,
+          entity.amount,
+          entity.createdAt,
+        ),
+    );
+  }
+
+  async findAll(): Promise<Transaction[]> {
+    const entities = await this.repo.find();
+    return entities.map(
+      (entity) =>
+        new Transaction(
+          entity.id,
+          entity.customerId,
+          entity.status,
+          entity.amount,
+          entity.createdAt,
+        ),
+    );
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.repo.delete(id);
+  }
 }
