@@ -10,6 +10,7 @@ import { DatabaseSeeder } from './database/seeders/database.seeder';
 import { StockOrmEntity } from './modules/stock/infrastructure/entities/stock.orm-entity';
 import { CustomersModule } from './modules/customers/customers.module';
 import { DeliveriesModule } from './modules/deliveries/deliveries.module';
+import { CustomerSeeder } from './database/seeders/customer.seeder';
 
 @Module({
   imports: [
@@ -28,12 +29,13 @@ import { DeliveriesModule } from './modules/deliveries/deliveries.module';
       }),
     }),
     TypeOrmModule.forFeature([StockOrmEntity]),
+
     // Modules
     TransactionsModule,
     StockModule,
     CustomersModule,
     DeliveriesModule,
   ],
-  providers: [StockSeeder, DatabaseSeeder],
+  providers: [StockSeeder, DatabaseSeeder, CustomerSeeder],
 })
 export class AppModule {}
