@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TransactionRepositoryPort } from '../../ports/out/transaction-repository.port';
 import { StockRepositoryPort } from '../../../stock/ports/out/stock-repository.port';
 import { CustomerRepositoryPort } from '../../../customers/ports/out/customer-repository.port';
@@ -52,17 +52,17 @@ export class ProcessPurchaseTransactionUseCase {
     // 1. Validate customer exists
     const customer = await this.customerRepo.findById(request.customerId);
     if (!customer) {
-      throw new Error('Customer not found');
+      throw new NotFoundException(`Customer not found`);
     }
 
     // 2. Check stock availability
     const stock = await this.stockRepo.findById(request.productId);
     if (!stock) {
-      throw new Error('Product not found');
+      throw new NotFoundException('Product not found');
     }
 
     if (stock.quantity < request.quantity) {
-      throw new Error('Insufficient stock available');
+      throw new NotFoundException('Insufficient stock available');
     }
 
     // 3. Create transaction in PENDING status

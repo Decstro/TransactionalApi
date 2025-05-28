@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as crypto from 'crypto';
 
 // Interfaces
 interface CardData {
@@ -28,6 +29,7 @@ export class PaymentService {
   private readonly apiUrl = process.env.WOMPI_API_URL;
   private readonly publicKey = process.env.WOMPI_PUBLIC_KEY;
   private readonly privateKey = process.env.WOMPI_PRIVATE_KEY;
+  private readonly integritySecret = process.env.WOMPI_INTEGRITY_SECRET;
 
   async processWompiPayment(
     transactionId: string,
@@ -66,6 +68,30 @@ export class PaymentService {
     }
   }
 
+  private generateWompiSignature(
+    reference: string,
+    amount: number,
+    currency: string,
+  ): string {
+    const concatenated = `${reference}${amount}${currency}${this.integritySecret}`;
+    return crypto.createHash('sha256').update(concatenated).digest('hex');
+  }
+
+  private async getAcceptanceToken(): Promise<string> {
+    interface AcceptanceTokenResponse {
+      data: {
+        presigned_acceptance: {
+          acceptance_token: string;
+        };
+      };
+    }
+
+    const response = await axios.get<AcceptanceTokenResponse>(
+      `${this.apiUrl}/merchants/${this.publicKey}`,
+    );
+    return response.data.data.presigned_acceptance.acceptance_token;
+  }
+
   private async tokenizeCard(cardData: CardData): Promise<{ token: string }> {
     const response = await axios.post<TokenizeCardResponse>(
       `${this.apiUrl}/tokens/cards`,
@@ -83,7 +109,6 @@ export class PaymentService {
         },
       },
     );
-
     return { token: response.data.data.id };
   }
 
@@ -93,18 +118,29 @@ export class PaymentService {
     paymentMethod: string,
     paymentSourceId?: string,
   ): Promise<WompiTransactionResponse> {
+    // Obtenemos el acceptance token
+    const acceptanceToken = await this.getAcceptanceToken();
+
+    const currency = 'COP';
+    const signature = this.generateWompiSignature(
+      transactionId,
+      amount,
+      currency,
+    );
+
+    // Construimos los datos de la transacción
     const transactionData = {
-      amount_in_cents: amount * 100,
-      currency: 'COP',
+      acceptance_token: acceptanceToken,
+      amount_in_cents: amount,
+      currency,
       customer_email: 'juanpuello@prueba.com',
-      payment_method: {
-        type: paymentMethod,
-        [paymentMethod.toLowerCase()]:
-          paymentMethod === 'CARD' ? { token: paymentSourceId } : {},
-      },
       reference: transactionId,
-      payment_source_id:
-        paymentMethod === 'CARD' ? parseInt(paymentSourceId || '0') : undefined,
+      payment_method: {
+        type: 'CARD',
+        installments: 1,
+        token: paymentSourceId,
+      },
+      signature,
     };
 
     const response = await axios.post<WompiTransactionResponse>(
@@ -118,6 +154,6 @@ export class PaymentService {
       },
     );
 
-    return response.data; // ✅ Return only the data
+    return response.data;
   }
 }
